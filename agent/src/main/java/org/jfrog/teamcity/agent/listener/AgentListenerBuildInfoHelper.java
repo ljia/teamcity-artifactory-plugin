@@ -19,6 +19,7 @@ package org.jfrog.teamcity.agent.listener;
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Multimap;
+
 import jetbrains.buildServer.ExtensionHolder;
 import jetbrains.buildServer.agent.AgentRunningBuild;
 import jetbrains.buildServer.agent.ArtifactsPreprocessor;
@@ -31,11 +32,13 @@ import jetbrains.buildServer.agent.impl.artifacts.ArtifactsCollection;
 import jetbrains.buildServer.log.Loggers;
 import jetbrains.buildServer.util.ArchiveUtil;
 import jetbrains.buildServer.util.StringUtil;
+
 import org.apache.commons.lang.StringUtils;
 import org.jfrog.build.api.Build;
 import org.jfrog.build.api.Dependency;
 import org.jfrog.build.api.dependency.BuildDependency;
 import org.jfrog.build.client.ArtifactoryBuildInfoClient;
+import org.jfrog.build.client.DeployDetails;
 import org.jfrog.build.client.DeployDetailsArtifact;
 import org.jfrog.build.client.IncludeExcludePatterns;
 import org.jfrog.build.client.PatternMatcher;
@@ -52,6 +55,7 @@ import org.jfrog.teamcity.common.RunnerParameterKeys;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -135,6 +139,43 @@ public class AgentListenerBuildInfoHelper {
                 IncludeExcludePatterns patterns = new IncludeExcludePatterns(
                         runnerParams.get(RunnerParameterKeys.DEPLOY_INCLUDE_PATTERNS),
                         runnerParams.get(RunnerParameterKeys.DEPLOY_EXCLUDE_PATTERNS));
+                
+                /*
+                 * Before deploying artifacts, run a check to make sure there is no duplicate.
+                 * If there are duplicates, skip the deployment process and error out.
+                 */
+                logger.progressStarted("Check duplicate artifact in " + selectedServerUrl);
+                
+                List<DeployDetails> duplicateArtifacts = new ArrayList<DeployDetails>();
+                boolean foundDuplicate = false;
+                for (DeployDetailsArtifact deployableArtifact : deployableArtifacts) {
+
+                    String deploymentPath = deployableArtifact.getDeploymentPath();
+                    if (!skipIncludeExcludeChecks && PatternMatcher.pathConflicts(deploymentPath, patterns)) {
+                        logger.progressMessage("Skipping the duplicate check of '" + deploymentPath +
+                                "' due to the defined include-exclude patterns.");
+                        continue;
+                    }
+                    try {
+                        if (infoClient.checkDuplicateArtifact(deployableArtifact.getDeployDetails())) {
+                            duplicateArtifacts.add(deployableArtifact.getDeployDetails());
+                            foundDuplicate = true;
+                        }
+                    } catch (IOException e) {
+                        throw new RuntimeException("Error when checking for duplicate: " + deployableArtifact.getFile() +
+                                ".\n Skipping deployment of artifacts (if any) and build info.", e);
+                    }
+                }
+                
+                if (foundDuplicate) {
+                    StringBuilder msg = new StringBuilder("The following artifacts has duplicates in the target repo:\n");
+                    for (DeployDetails duplicateArtifact : duplicateArtifacts) {
+                        msg.append(duplicateArtifact.getFile().getName()).append(", repo: ")
+                                .append(duplicateArtifact.getTargetRepository()).append("\n");
+                    }
+                    msg.append("Skipping deployment of artifacts (if any) and build info.");
+                    throw new RuntimeException(msg.toString());
+                }
 
                 logger.progressStarted("Deploying artifacts to " + selectedServerUrl);
                 for (DeployDetailsArtifact deployableArtifact : deployableArtifacts) {
