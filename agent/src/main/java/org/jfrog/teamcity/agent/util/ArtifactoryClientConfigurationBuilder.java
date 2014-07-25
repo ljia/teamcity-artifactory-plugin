@@ -158,6 +158,12 @@ public abstract class ArtifactoryClientConfigurationBuilder {
             if (StringUtils.isNotBlank(artifactPattern)) {
                 clientConf.publisher.setIvyArtifactPattern(artifactPattern);
             }
+            
+            String checkDuplicateArtifactValue = runParameters.get(RunnerParameterKeys.CHECK_DUPLICATE_ARTIFACT);
+            // todo: default value should be false
+            boolean checkDuplicateArtifact = StringUtils.isEmpty(checkDuplicateArtifactValue) || Boolean.valueOf(
+                    checkDuplicateArtifactValue);
+            clientConf.publisher.setCheckDuplicateArtifact(checkDuplicateArtifact);
         }
 
 

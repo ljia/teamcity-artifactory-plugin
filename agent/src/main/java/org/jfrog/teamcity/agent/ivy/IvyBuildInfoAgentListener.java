@@ -66,6 +66,8 @@ public class IvyBuildInfoAgentListener extends AgentLifeCycleAdapter {
             builder.append(" -listener org.jfrog.build.extractor.listener.ArtifactoryBuildListener");
             runner.addRunnerParameter("runnerArgs", builder.toString());
             runner.addRunnerParameter(RunnerParameterKeys.PUBLISH_BUILD_INFO, Boolean.TRUE.toString());
+            // todo: default value
+            runner.addRunnerParameter(RunnerParameterKeys.CHECK_DUPLICATE_ARTIFACT, Boolean.FALSE.toString());
             ArtifactoryClientConfiguration clientConf = ArtifactoryClientConfigurationBuilder.create(runner);
             try {
                 File tempPropFile = File.createTempFile("buildInfo", "properties");

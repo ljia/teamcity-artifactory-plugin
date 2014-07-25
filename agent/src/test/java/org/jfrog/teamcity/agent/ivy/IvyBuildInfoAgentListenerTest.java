@@ -149,6 +149,8 @@ public class IvyBuildInfoAgentListenerTest {
         EasyMock.expectLastCall();
         runner.addRunnerParameter(RunnerParameterKeys.PUBLISH_BUILD_INFO, Boolean.TRUE.toString());
         EasyMock.expectLastCall();
+        runner.addRunnerParameter(RunnerParameterKeys.CHECK_DUPLICATE_ARTIFACT, Boolean.FALSE.toString());
+        EasyMock.expectLastCall();
         runner.addSystemProperty(EasyMock.eq(BuildInfoConfigProperties.PROP_PROPS_FILE), EasyMock.isA(String.class));
         EasyMock.expectLastCall();
 

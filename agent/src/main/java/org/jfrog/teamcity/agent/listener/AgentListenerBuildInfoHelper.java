@@ -140,41 +140,44 @@ public class AgentListenerBuildInfoHelper {
                         runnerParams.get(RunnerParameterKeys.DEPLOY_INCLUDE_PATTERNS),
                         runnerParams.get(RunnerParameterKeys.DEPLOY_EXCLUDE_PATTERNS));
                 
-                /*
-                 * Before deploying artifacts, run a check to make sure there is no duplicate.
-                 * If there are duplicates, skip the deployment process and error out.
-                 */
-                logger.progressStarted("Check duplicate artifact in " + selectedServerUrl);
-                
-                List<DeployDetails> duplicateArtifacts = new ArrayList<DeployDetails>();
-                boolean foundDuplicate = false;
-                for (DeployDetailsArtifact deployableArtifact : deployableArtifacts) {
-
-                    String deploymentPath = deployableArtifact.getDeploymentPath();
-                    if (!skipIncludeExcludeChecks && PatternMatcher.pathConflicts(deploymentPath, patterns)) {
-                        logger.progressMessage("Skipping the duplicate check of '" + deploymentPath +
-                                "' due to the defined include-exclude patterns.");
-                        continue;
-                    }
-                    try {
-                        if (infoClient.checkDuplicateArtifact(deployableArtifact.getDeployDetails())) {
-                            duplicateArtifacts.add(deployableArtifact.getDeployDetails());
-                            foundDuplicate = true;
-                        }
-                    } catch (IOException e) {
-                        throw new RuntimeException("Error when checking for duplicate: " + deployableArtifact.getFile() +
-                                ".\n Skipping deployment of artifacts (if any) and build info.", e);
-                    }
-                }
-                
-                if (foundDuplicate) {
-                    StringBuilder msg = new StringBuilder("The following artifacts has duplicates in the target repo:\n");
-                    for (DeployDetails duplicateArtifact : duplicateArtifacts) {
-                        msg.append(duplicateArtifact.getFile().getName()).append(", repo: ")
-                                .append(duplicateArtifact.getTargetRepository()).append("\n");
-                    }
-                    msg.append("Skipping deployment of artifacts (if any) and build info.");
-                    throw new RuntimeException(msg.toString());
+                String checkDuplicateArtifactValue = runnerParams.get(RunnerParameterKeys.CHECK_DUPLICATE_ARTIFACT);
+                if (!StringUtil.isEmpty(checkDuplicateArtifactValue) && Boolean.parseBoolean(checkDuplicateArtifactValue)) {
+	                /*
+	                 * Before deploying artifacts, run a check to make sure there is no duplicate.
+	                 * If there are duplicates, skip the deployment process and error out.
+	                 */
+	                logger.progressStarted("Check duplicate artifact in " + selectedServerUrl);
+	                
+	                List<DeployDetails> duplicateArtifacts = new ArrayList<DeployDetails>();
+	                boolean foundDuplicate = false;
+	                for (DeployDetailsArtifact deployableArtifact : deployableArtifacts) {
+	
+	                    String deploymentPath = deployableArtifact.getDeploymentPath();
+	                    if (!skipIncludeExcludeChecks && PatternMatcher.pathConflicts(deploymentPath, patterns)) {
+	                        logger.progressMessage("Skipping the duplicate check of '" + deploymentPath +
+	                                "' due to the defined include-exclude patterns.");
+	                        continue;
+	                    }
+	                    try {
+	                        if (infoClient.checkDuplicateArtifact(deployableArtifact.getDeployDetails())) {
+	                            duplicateArtifacts.add(deployableArtifact.getDeployDetails());
+	                            foundDuplicate = true;
+	                        }
+	                    } catch (IOException e) {
+	                        throw new RuntimeException("Error when checking for duplicate: " + deployableArtifact.getFile() +
+	                                ".\n Skipping deployment of artifacts (if any) and build info.", e);
+	                    }
+	                }
+	                
+	                if (foundDuplicate) {
+	                    StringBuilder msg = new StringBuilder("The following artifacts has duplicates in the target repo:\n");
+	                    for (DeployDetails duplicateArtifact : duplicateArtifacts) {
+	                        msg.append(duplicateArtifact.getFile().getName()).append(", repo: ")
+	                                .append(duplicateArtifact.getTargetRepository()).append("\n");
+	                    }
+	                    msg.append("Skipping deployment of artifacts (if any) and build info.");
+	                    throw new RuntimeException(msg.toString());
+	                }
                 }
 
                 logger.progressStarted("Deploying artifacts to " + selectedServerUrl);

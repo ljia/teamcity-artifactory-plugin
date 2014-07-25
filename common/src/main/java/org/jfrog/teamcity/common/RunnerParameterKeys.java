@@ -33,6 +33,7 @@ public class RunnerParameterKeys {
     public final static String DISABLE_AUTO_LICENSE_DISCOVERY = PREFIX + "disableAutoLicenseDiscovery";
     public final static String PROJECT_USES_ARTIFACTORY_GRADLE_PLUGIN = PREFIX + "projectUsesArtifactoryGradlePlugin";
     public final static String PUBLISH_BUILD_INFO = PREFIX + "publishBuildInfo";
+    public final static String CHECK_DUPLICATE_ARTIFACT = PREFIX + "checkDuplicateArtifact";
     public static final String INCLUDE_ENV_VARS = PREFIX + "includeEnvVars";
     public static final String ENV_VARS_INCLUDE_PATTERNS = PREFIX + "envVarsIncludePatterns";
     public static final String ENV_VARS_EXCLUDE_PATTERNS = PREFIX + "envVarsExcludePatterns";
