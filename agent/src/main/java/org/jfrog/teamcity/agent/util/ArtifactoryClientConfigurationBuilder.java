@@ -160,12 +160,10 @@ public abstract class ArtifactoryClientConfigurationBuilder {
             }
             
             String checkDuplicateArtifactValue = runParameters.get(RunnerParameterKeys.CHECK_DUPLICATE_ARTIFACT);
-            // todo: default value should be false
-            boolean checkDuplicateArtifact = StringUtils.isEmpty(checkDuplicateArtifactValue) || Boolean.valueOf(
+            boolean isCheckDuplicateArtifact = !StringUtils.isEmpty(checkDuplicateArtifactValue) && Boolean.valueOf(
                     checkDuplicateArtifactValue);
-            clientConf.publisher.setCheckDuplicateArtifact(checkDuplicateArtifact);
+            clientConf.publisher.setCheckDuplicateArtifact(isCheckDuplicateArtifact);
         }
-
 
         String publishBuildInfoValue = runParameters.get(RunnerParameterKeys.PUBLISH_BUILD_INFO);
         boolean isPublishBuildInfo = StringUtils.isEmpty(publishBuildInfoValue) || Boolean.valueOf(

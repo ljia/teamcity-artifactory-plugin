@@ -172,7 +172,9 @@ public class AgentListenerBuildInfoHelper {
 	                if (foundDuplicate) {
 	                    StringBuilder msg = new StringBuilder("The following artifacts has duplicates in the target repo:\n");
 	                    for (DeployDetails duplicateArtifact : duplicateArtifacts) {
-	                        msg.append(duplicateArtifact.getFile().getName()).append(", repo: ")
+	                        String artifactName = duplicateArtifact.getArtifactPath()
+	                                .substring(duplicateArtifact.getArtifactPath().lastIndexOf('/') + 1);
+	                        msg.append(artifactName).append(", repo: ")
 	                                .append(duplicateArtifact.getTargetRepository()).append("\n");
 	                    }
 	                    msg.append("Skipping deployment of artifacts (if any) and build info.");

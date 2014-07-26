@@ -50,6 +50,11 @@
         Publish Build Info: <props:displayValue
             name="org.jfrog.artifactory.selectedDeployableServer.publishBuildInfo" emptyValue="false"/>
     </div>
+    
+    <div class="nestedParameter">
+        Check duplicate artifacts: <props:displayValue
+            name="org.jfrog.artifactory.selectedDeployableServer.checkDuplicateArtifact" emptyValue="false"/>
+    </div>
 
     <jsp:include page="../common/envVarsView.jsp">
         <jsp:param name="shouldDisplay" value="${foundPublishBuildInfoSelected}"/>

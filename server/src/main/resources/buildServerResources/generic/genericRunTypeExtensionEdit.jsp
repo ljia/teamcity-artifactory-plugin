@@ -83,7 +83,7 @@
                     $('org.jfrog.artifactory.selectedDeployableServer.overrideDefaultDeployerCredentials').checked =
                             false;
                     $('org.jfrog.artifactory.selectedDeployableServer.publishBuildInfo').checked = true;
-                    $('org.jfrog.artifactory.selectedDeployableServer.checkDuplicateArtifact').checked = false;
+                    $('org.jfrog.artifactory.selectedDeployableServer.checkDuplicateArtifact').checked = true;
                     $('org.jfrog.artifactory.selectedDeployableServer.envVarsExcludePatterns').value = '*password*,*secret*';
                 }
                 BS.local.loadTargetRepos(selectedUrlId);
