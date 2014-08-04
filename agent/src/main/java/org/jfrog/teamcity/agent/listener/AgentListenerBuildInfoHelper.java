@@ -33,6 +33,7 @@ import jetbrains.buildServer.log.Loggers;
 import jetbrains.buildServer.util.ArchiveUtil;
 import jetbrains.buildServer.util.StringUtil;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jfrog.build.api.Build;
 import org.jfrog.build.api.Dependency;
@@ -140,8 +141,18 @@ public class AgentListenerBuildInfoHelper {
                         runnerParams.get(RunnerParameterKeys.DEPLOY_INCLUDE_PATTERNS),
                         runnerParams.get(RunnerParameterKeys.DEPLOY_EXCLUDE_PATTERNS));
                 
+                final String[] mustCheckRepos = new String[] {
+                        "yum-dev-local",
+                        "yum-qa-local",
+                        "yum-ote-local",
+                        "yum-prod-local",
+                        "bsd-dev-local",
+                        "bsd-qa-local",
+                        "bsd-prod-local"
+                };
                 String checkDuplicateArtifactValue = runnerParams.get(RunnerParameterKeys.CHECK_DUPLICATE_ARTIFACT);
-                if (!StringUtil.isEmpty(checkDuplicateArtifactValue) && Boolean.parseBoolean(checkDuplicateArtifactValue)) {
+                if (ArrayUtils.contains(mustCheckRepos, deployableArtifacts.get(0).getDeployDetails().getTargetRepository()) ||
+                        !StringUtil.isEmpty(checkDuplicateArtifactValue) && Boolean.parseBoolean(checkDuplicateArtifactValue)) {
 	                /*
 	                 * Before deploying artifacts, run a check to make sure there is no duplicate.
 	                 * If there are duplicates, skip the deployment process and error out.
