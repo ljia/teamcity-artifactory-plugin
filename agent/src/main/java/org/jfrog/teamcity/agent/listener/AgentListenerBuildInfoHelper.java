@@ -151,7 +151,8 @@ public class AgentListenerBuildInfoHelper {
                         "bsd-prod-local"
                 };
                 String checkDuplicateArtifactValue = runnerParams.get(RunnerParameterKeys.CHECK_DUPLICATE_ARTIFACT);
-                if (ArrayUtils.contains(mustCheckRepos, deployableArtifacts.get(0).getDeployDetails().getTargetRepository()) ||
+                if ((deployableArtifacts.size() > 0 && 
+                        ArrayUtils.contains(mustCheckRepos, deployableArtifacts.get(0).getDeployDetails().getTargetRepository())) ||
                         !StringUtil.isEmpty(checkDuplicateArtifactValue) && Boolean.parseBoolean(checkDuplicateArtifactValue)) {
 	                /*
 	                 * Before deploying artifacts, run a check to make sure there is no duplicate.
