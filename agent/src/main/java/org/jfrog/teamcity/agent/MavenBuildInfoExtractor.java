@@ -36,6 +36,7 @@ import org.jfrog.build.api.release.Promotion;
 import org.jfrog.build.client.DeployDetails;
 import org.jfrog.build.client.DeployDetailsArtifact;
 import org.jfrog.teamcity.agent.api.Gavc;
+import org.jfrog.teamcity.agent.listener.AgentListenerBuildInfoHelper;
 import org.jfrog.teamcity.agent.release.ReleaseParameters;
 import org.jfrog.teamcity.agent.util.InfoCollectionException;
 import org.jfrog.teamcity.common.ReleaseManagementParameterKeys;
@@ -179,22 +180,16 @@ public class MavenBuildInfoExtractor extends BaseBuildInfoExtractor<File> {
     }
 
     private Gavc addModuleArtifact(ModuleBuilder moduleBuilder, Element artifactElement) {
-
         Gavc gavc = buildGavc(artifactElement);
         if (gavc.isValid()) {
-
             String artifactPath = artifactElement.getChildText("path");
 
             if (StringUtils.isBlank(artifactPath)) {
-
-                /**
-                 * If the current "artifact" element has no path and it's a pom, then the pom path is on the "project"
-                 * element
-                 */
+                // If the current "artifact" element has no path and it's a pom, then the pom path is on the "project"
+                // element
                 if ("pom".equalsIgnoreCase(gavc.type)) {
                     artifactPath = artifactElement.getParentElement().getChildText("path");
                 }
-
                 if (StringUtils.isBlank(artifactPath)) {
                     return null;
                 }
@@ -206,10 +201,12 @@ public class MavenBuildInfoExtractor extends BaseBuildInfoExtractor<File> {
             ArtifactBuilder artifactBuilder = new ArtifactBuilder(artifactName);
             artifactBuilder.type(gavc.type);
 
-            if (artifactFile.exists()) {
-
+            if (artifactFile.isFile()) {
                 String deploymentRepo = getDeploymentRepo(gavc);
                 addChecksumInfo(artifactFile, deploymentRepo, deploymentPath, artifactBuilder);
+            } else {
+                logger.message(String.format("Warning: %s includes a path to an artifact that does not exist: %s Skipping checksum calculation for this artifact",
+                        AgentListenerBuildInfoHelper.MAVEN_BUILD_INFO_XML, artifactPath));
             }
             moduleBuilder.addArtifact(artifactBuilder.build());
         }

@@ -41,6 +41,7 @@ import org.jfrog.teamcity.agent.LoggingArtifactsBuilderAdapter;
 import org.jfrog.teamcity.agent.MavenBuildInfoExtractor;
 import org.jfrog.teamcity.agent.api.ExtractedBuildInfo;
 import org.jfrog.teamcity.agent.util.TeamcityAgenBuildInfoLog;
+import org.jfrog.teamcity.common.ConstantValues;
 import org.jfrog.teamcity.common.RunTypeUtils;
 import org.jfrog.teamcity.common.RunnerParameterKeys;
 
@@ -56,6 +57,7 @@ import static org.jfrog.teamcity.common.ConstantValues.*;
  * @author Noam Y. Tenne
  */
 public class AgentListenerBuildInfoHelper {
+    public static final String MAVEN_BUILD_INFO_XML = "maven-build-info.xml";
 
     private ExtensionHolder extensionHolder;
     private ArtifactsWatcher watcher;
@@ -84,6 +86,14 @@ public class AgentListenerBuildInfoHelper {
 
     private void retrievePublishedAndBuildDependencies(BuildRunnerContext runner,
             List<Dependency> publishedDependencies, List<BuildDependency> buildDependencies) {
+
+        // In case the BUILD_DEPENDENCIES property value contains the DISABLED_MESSAGE value,
+        // we do not want to pass it on:
+        String buildDependenciesValue = runner.getRunnerParameters().get(RunnerParameterKeys.BUILD_DEPENDENCIES);
+        if (ConstantValues.DISABLED_MESSAGE.equals(buildDependenciesValue)) {
+            runner.addRunnerParameter(RunnerParameterKeys.BUILD_DEPENDENCIES, "");
+        }
+
         DependenciesResolver dependenciesResolver = new DependenciesResolver(runner);
         try {
             publishedDependencies.addAll(dependenciesResolver.retrievePublishedDependencies());
@@ -167,7 +177,7 @@ public class AgentListenerBuildInfoHelper {
         Multimap<File, String> publishableArtifacts = getPublishableArtifacts(runnerContext);
 
         if (RunTypeUtils.isMavenRunType(runnerContext.getRunType())) {
-            File mavenBuildInfoFile = new File(build.getBuildTempDirectory(), "maven-build-info.xml");
+            File mavenBuildInfoFile = new File(build.getBuildTempDirectory(), MAVEN_BUILD_INFO_XML);
 
             if (!mavenBuildInfoFile.exists()) {
                 String missingReport = "Skipping build info collection: Maven build info report doesn't exist.";
