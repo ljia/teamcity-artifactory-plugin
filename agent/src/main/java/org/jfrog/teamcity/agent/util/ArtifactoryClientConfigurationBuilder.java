@@ -184,8 +184,12 @@ public abstract class ArtifactoryClientConfigurationBuilder {
             if (StringUtils.isNotBlank(artifactPattern)) {
                 clientConf.publisher.setIvyArtifactPattern(artifactPattern);
             }
+            
+            String checkDuplicateArtifactValue = runParameters.get(RunnerParameterKeys.CHECK_DUPLICATE_ARTIFACT);
+            boolean isCheckDuplicateArtifact = !StringUtils.isEmpty(checkDuplicateArtifactValue) && Boolean.valueOf(
+                    checkDuplicateArtifactValue);
+            clientConf.publisher.setCheckDuplicateArtifact(isCheckDuplicateArtifact);
         }
-
 
         String publishBuildInfoValue = runParameters.get(RunnerParameterKeys.PUBLISH_BUILD_INFO);
         boolean isPublishBuildInfo = Boolean.valueOf(publishBuildInfoValue);

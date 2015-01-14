@@ -54,6 +54,7 @@ BS.local = {
             $('org.jfrog.artifactory.selectedDeployableServer.deployIncludePatterns').value = '';
             $('org.jfrog.artifactory.selectedDeployableServer.deployExcludePatterns').value = '';
             $('org.jfrog.artifactory.selectedDeployableServer.publishBuildInfo').checked = true;
+            $('org.jfrog.artifactory.selectedDeployableServer.checkDuplicateArtifact').checked = true;
             $('org.jfrog.artifactory.selectedDeployableServer.includeEnvVars').checked = false;
             $('org.jfrog.artifactory.selectedDeployableServer.envVarsIncludePatterns').value = '';
             $('org.jfrog.artifactory.selectedDeployableServer.envVarsExcludePatterns').value = '*password*,*secret*';
@@ -80,6 +81,7 @@ BS.local = {
             BS.Util.hide($('deployIncludePatterns.container'));
             BS.Util.hide($('deployExcludePatterns.container'));
             BS.Util.hide($('publishBuildInfo.container'));
+            BS.Util.hide($('checkDuplicateArtifact.container'));
             BS.Util.hide($('includeEnvVars.container'));
             BS.Util.hide($('envVarsIncludePatterns.container'));
             BS.Util.hide($('envVarsExcludePatterns.container'));
@@ -102,6 +104,7 @@ BS.local = {
                 $('org.jfrog.artifactory.selectedDeployableServer.deployArtifacts').checked = true;
                 $('org.jfrog.artifactory.selectedDeployableServer.envVarsExcludePatterns').value = '*password*,*secret*';
                 $('org.jfrog.artifactory.selectedDeployableServer.publishBuildInfo').checked = true;
+                $('org.jfrog.artifactory.selectedDeployableServer.checkDuplicateArtifact').checked = true;
                 $('org.jfrog.artifactory.selectedDeployableServer.overrideDefaultDeployerCredentials').checked =
                         false;
             }
@@ -164,6 +167,8 @@ BS.local = {
                     BS.Util.show($('envVarsExcludePatterns.container'));
                 }
             }
+            
+            BS.Util.show($('checkDuplicateArtifact.container'));
 
             if (!BS.local.isActivateIvyIntegrationSelected()) {
                 BS.Util.show($('publishedArtifacts.container'));
@@ -377,6 +382,22 @@ Use the Artifactory-Ivy integration to collect build info data and deploy artifa
                                     onclick="BS.local.togglePublishBuildInfoSelection()"/>
             <span class="smallNote">
                 Uncheck if you do not wish to deploy build information from the plugin.
+            </span>
+        </td>
+    </tr>
+
+    <tr class="noBorder" id="checkDuplicateArtifact.container"
+        style="${foundExistingConfig ? '' : 'display: none;'}">
+        <th>
+            <label for="org.jfrog.artifactory.selectedDeployableServer.checkDuplicateArtifact">
+                Check duplicate artifacts:
+            </label>
+        </th>
+        <td>
+            <props:checkboxProperty name="org.jfrog.artifactory.selectedDeployableServer.checkDuplicateArtifact" />
+            <span class="smallNote">
+                Check if you wish to check duplicate artifact before starting the deployment. If there is
+                duplicate, the deployment will be aborted.
             </span>
         </td>
     </tr>

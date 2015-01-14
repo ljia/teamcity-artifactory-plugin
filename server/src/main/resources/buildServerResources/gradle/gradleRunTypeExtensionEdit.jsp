@@ -63,6 +63,7 @@ BS.local = {
             $('org.jfrog.artifactory.selectedDeployableServer.ivyPattern').value = '';
             $('org.jfrog.artifactory.selectedDeployableServer.artifactPattern').value = '';
             $('org.jfrog.artifactory.selectedDeployableServer.publishBuildInfo').checked = true;
+            $('org.jfrog.artifactory.selectedDeployableServer.checkDuplicateArtifact').checked = true;
             $('org.jfrog.artifactory.selectedDeployableServer.includeEnvVars').checked = false;
             $('org.jfrog.artifactory.selectedDeployableServer.envVarsIncludePatterns').value = '';
             $('org.jfrog.artifactory.selectedDeployableServer.envVarsExcludePatterns').value = '*password*,*secret*';
@@ -102,6 +103,7 @@ BS.local = {
             BS.Util.hide($('ivyPattern.container'));
             BS.Util.hide($('artifactPattern.container'));
             BS.Util.hide($('publishBuildInfo.container'));
+            BS.Util.hide($('checkDuplicateArtifact.container'));
             BS.Util.hide($('includeEnvVars.container'));
             BS.Util.hide($('envVarsIncludePatterns.container'));
             BS.Util.hide($('envVarsExcludePatterns.container'));
@@ -128,6 +130,7 @@ BS.local = {
                 $('org.jfrog.artifactory.selectedDeployableServer.activateGradleIntegration').checked = false;
                 $('org.jfrog.artifactory.selectedDeployableServer.deployArtifacts').checked = true;
                 $('org.jfrog.artifactory.selectedDeployableServer.publishBuildInfo').checked = true;
+                $('org.jfrog.artifactory.selectedDeployableServer.checkDuplicateArtifact').checked = true;
                 $('org.jfrog.artifactory.selectedDeployableServer.envVarsExcludePatterns').value = '*password*,*secret*';
                 $('org.jfrog.artifactory.selectedDeployableServer.overrideDefaultDeployerCredentials').checked = false;
                 $('org.jfrog.artifactory.selectedDeployableServer.publishMavenDescriptors').checked = true;
@@ -204,6 +207,8 @@ BS.local = {
                     BS.Util.show($('blackduck.autoDiscardStaleComponentRequests.container'));
                 }
             }
+
+            BS.Util.show($('checkDuplicateArtifact.container'));
 
             BS.Util.show($('enableReleaseManagement.container'));
             var releaseManagementEnabled =
@@ -532,6 +537,22 @@ The TeamCity plugin automatically applies the Artifactory plugin (and, consequen
                                     onclick="BS.local.togglePublishBuildInfoSelection()"/>
             <span class="smallNote">
                 Uncheck if you do not wish to deploy build information from the plugin.
+            </span>
+        </td>
+    </tr>
+    
+    <tr class="noBorder" id="checkDuplicateArtifact.container"
+        style="${foundExistingConfig ? '' : 'display: none;'}">
+        <th>
+            <label for="org.jfrog.artifactory.selectedDeployableServer.checkDuplicateArtifact">
+                Check duplicate artifacts:
+            </label>
+        </th>
+        <td>
+            <props:checkboxProperty name="org.jfrog.artifactory.selectedDeployableServer.checkDuplicateArtifact" />
+            <span class="smallNote">
+                Check if you wish to check duplicate artifact before starting the deployment. If there is
+                duplicate, the deployment will be aborted.
             </span>
         </td>
     </tr>
